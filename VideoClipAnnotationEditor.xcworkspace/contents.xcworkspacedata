@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:../extra-appkit/ExtraAppKit.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:VideoClipAnnotationEditor.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:VideoClipAnnotationTest.xcodeproj">
+   </FileRef>
+</Workspace>

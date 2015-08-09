@@ -6,33 +6,36 @@
 //
 
 import Foundation
+import ExtraAppKit
 
-public class VideoClipAnnotationView : NSTextField {
-    internal var annotation: VideoClipAnnotation? {
-        didSet {
-            if let annotation = self.annotation, let superview = self.superview as? VideoClipView {
-                self.attributedStringValue = NSAttributedString(
-                    string:     annotation.text,
-                    attributes: [
-                        NSFontAttributeName: superview.annotationFont,
-                        NSForegroundColorAttributeName: NSColor.whiteColor(),
-//                        NSBackgroundColorAttributeName: annotation.color
-                    ]);
-                
-                self.backgroundColor = annotation.color;
-            }
-        }
-    }
+public class VideoClipAnnotationView : NSView {
+    internal var annotation: VideoClipAnnotation?
 
     internal init(frame: NSRect, annotation: VideoClipAnnotation) {
         self.annotation = annotation;
         super.init(frame: frame);
-        self.bordered   = false;
-        self.editable   = false;
-        self.selectable = false;
     }
     
     public required init?(coder: NSCoder) {
         super.init(coder: coder);
+    }
+    
+    public override func drawRect(dirtyRect: NSRect) {
+        if let annotation = self.annotation, let superview = self.superview as? VideoClipView {
+            let text = NSAttributedString(
+                string:     annotation.text,
+                attributes: superview.annotationStyle);
+            
+            var rect = self.bounds;
+            
+            NSBezierPath(roundedRect: rect, radius: 2.5).setClip();
+            
+            annotation.color.backgroundColor.set();
+            NSRectFill(self.bounds);
+            
+            rect.origin.x    += 5;
+            rect.size.width  -= 10;
+            text.drawInRect(rect);
+        }
     }
 }

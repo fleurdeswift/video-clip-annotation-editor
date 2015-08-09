@@ -106,7 +106,46 @@ public class VideoClipView : ScrollableView {
         return [];
     }
     
-    public var annotationFont: NSFont = NSFont.systemFontOfSize(NSFont.smallSystemFontSize());
+    public var annotationFont: NSFont = NSFont.systemFontOfSize(NSFont.smallSystemFontSize()) {
+        didSet {
+            _annotationStyle = nil;
+        }
+    }
+    
+    private var _annotationStyle: [String: AnyObject]?;
+    public var annotationStyle: [String: AnyObject] {
+        get {
+            if let a = _annotationStyle {
+                return a;
+            }
+            
+            let p = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle;
+            
+            p.lineBreakMode = NSLineBreakMode.ByTruncatingTail;
+            
+            let a = [
+                NSFontAttributeName:           self.annotationFont,
+                NSParagraphStyleAttributeName: p.copy()
+            ];
+            
+            _annotationStyle = a;
+            return a;
+        }
+    }
+    
+    private var _annotationHeight: CGFloat?;
+    public var annotationHeight: CGFloat {
+        get {
+            if let a = _annotationHeight {
+                return a;
+            }
+            
+            let p = ("X" as NSString).sizeWithAttributes(self.annotationStyle).height;
+            
+            _annotationHeight = p;
+            return p;
+        }
+    }
     
     public func reloadData() {
         let lines         = buildLines();
@@ -128,7 +167,7 @@ public class VideoClipView : ScrollableView {
             }
         }
         
-        let annotationHeight = ("X" as NSString).sizeWithAttributes([NSFontAttributeName: annotationFont]).height + 2;
+        let annotationHeight = self.annotationHeight + 2;
         var y                = CGFloat(margin);
 
         let width = ceil(max(CGFloat(spaceBetweenClip) * 3, self.clipBounds.width))
@@ -170,7 +209,7 @@ public class VideoClipView : ScrollableView {
                     threadRect.origin.y -= (CGFloat(i + 1) * annotationHeight);
                 }
                 else {
-                    threadRect.origin.y += lineRect.height + (CGFloat(i) * annotationHeight);
+                    threadRect.origin.y += lineRect.height + 1 + (CGFloat(i) * annotationHeight);
                 }
                 
                 for block in thread.blocks {
@@ -183,7 +222,7 @@ public class VideoClipView : ScrollableView {
                                 x:      CGFloat(block.position.location),
                                 y:      threadRect.origin.y,
                                 width:  CGFloat(block.position.length),
-                                height: threadRect.size.height);
+                                height: threadRect.size.height - 1);
                         annotationViews.removeAtIndex(0);
                     }
                     else {
@@ -191,7 +230,7 @@ public class VideoClipView : ScrollableView {
                                 x:      CGFloat(block.position.location),
                                 y:      threadRect.origin.y,
                                 width:  CGFloat(block.position.length),
-                                height: threadRect.size.height), annotation: block.annotation);
+                                height: threadRect.size.height - 1), annotation: block.annotation);
                         self.addSubview(blockView);
                     }
                 }

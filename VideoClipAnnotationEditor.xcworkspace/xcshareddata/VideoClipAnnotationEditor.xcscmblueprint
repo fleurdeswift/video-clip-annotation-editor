@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "5E5B1163583E3302F19D1ECBD5181E48C8794B92",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "5E5B1163583E3302F19D1ECBD5181E48C8794B92" : 0,
+    "D3615CBC628485C8992C89C83BE8EFBBA58446CF" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "37490A96-5373-4B21-B8D6-54CDD26C4FFC",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "5E5B1163583E3302F19D1ECBD5181E48C8794B92" : "video-clip-annotation-editor\/",
+    "D3615CBC628485C8992C89C83BE8EFBBA58446CF" : "extra-appkit\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "VideoClipAnnotationEditor",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 203,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "VideoClipAnnotationEditor.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/fleurdeswift\/video-clip-annotation-editor.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5E5B1163583E3302F19D1ECBD5181E48C8794B92"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/fleurdeswift\/extra-appkit.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D3615CBC628485C8992C89C83BE8EFBBA58446CF"
+    }
+  ]
+}
