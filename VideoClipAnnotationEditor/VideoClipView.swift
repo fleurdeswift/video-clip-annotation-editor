@@ -5,7 +5,7 @@
 //  Copyright © 2015 Fleur de Swift. All rights reserved.
 //
 
-import Foundation
+import AppKit
 import ExtraAppKit
 
 public class VideoClipView : ScrollableView {
@@ -147,6 +147,22 @@ public class VideoClipView : ScrollableView {
         }
     }
     
+    internal struct LayoutDigestLine {
+        var rect: NSRect;
+        var clips = [VideoClipLineEntryView]();
+        var annotations = [VideoClipAnnotationView]();
+        
+        init(rect: NSRect) {
+            self.rect = rect;
+        }
+    }
+    
+    internal struct LayoutDigest {
+        var lines = [LayoutDigestLine]();
+    }
+    
+    internal var layoutDigest = LayoutDigest();
+    
     public func reloadData() {
         let lines         = buildLines();
         var previewHeight = CGFloat(80);
@@ -172,6 +188,10 @@ public class VideoClipView : ScrollableView {
 
         let width = ceil(max(CGFloat(spaceBetweenClip) * 3, self.clipBounds.width))
         
+        layoutDigest.lines.removeAll();
+        
+        let spaceBetweenClipD2: CGFloat = CGFloat(spaceBetweenClip) / 2;
+        
         for line in lines {
             let threadDown = line.threads.count / 2;
             let threadUp   = line.threads.count - threadDown;
@@ -180,6 +200,12 @@ public class VideoClipView : ScrollableView {
                                 y:      y + (CGFloat(threadUp) * annotationHeight),
                                 width:  width,
                                 height: previewHeight)
+
+            var lineDigest = LayoutDigestLine(rect: NSRect(
+                                x:      CGFloat(0),
+                                y:      y - spaceBetweenClipD2,
+                                width:  width,
+                                height: previewHeight + (CGFloat(line.threads.count) * annotationHeight) + spaceBetweenClipD2));
             
             for entry in line.entries {
                 let position  = entry.position;
@@ -189,10 +215,12 @@ public class VideoClipView : ScrollableView {
                     clipView.entry = entry;
                     clipView.frame = entryRect;
                     clipViews.removeAtIndex(0);
+                    lineDigest.clips.append(clipView);
                 }
                 else {
                     let clipView = VideoClipLineEntryView(frame: entryRect, entry: entry);
                     self.addSubview(clipView);
+                    lineDigest.clips.append(clipView);
                 }
             }
             
@@ -233,10 +261,15 @@ public class VideoClipView : ScrollableView {
                                 height: threadRect.size.height - 1), annotation: block.annotation);
                         self.addSubview(blockView);
                     }
+                    
+                    blockView.edge = block.edge;
+                    lineDigest.annotations.append(blockView);
                 }
             }
             
             y += previewHeight + (CGFloat(line.threads.count) * annotationHeight) + CGFloat(spaceBetweenClip);
+            
+            layoutDigest.lines.append(lineDigest);
         }
         
         for view in clipViews {
@@ -258,7 +291,129 @@ public class VideoClipView : ScrollableView {
         }
     }
     
+    internal var tracking: NSTrackingArea?;
+    
     public override func frameDidChange() {
         reloadData();
+    }
+
+    public override func updateTrackingAreas() {
+        let options = NSTrackingAreaOptions([
+                            NSTrackingAreaOptions.ActiveAlways,
+                            NSTrackingAreaOptions.InVisibleRect,
+                            NSTrackingAreaOptions.MouseEnteredAndExited,
+                            NSTrackingAreaOptions.MouseMoved
+        ]);
+
+        if let tracking = self.tracking {
+            self.removeTrackingArea(tracking);
+        }
+        
+        tracking = NSTrackingArea(rect: self.bounds, options: options, owner: self, userInfo: nil);
+        self.addTrackingArea(tracking!);
+    }
+
+    public enum HitArea {
+        case Background, Annotation, Clip, Thread
+    }
+    
+    public enum HitHandle {
+        case None, Left, Right
+    }
+
+    public struct HitTest : CustomStringConvertible {
+        public var area:       HitArea;
+        public var clip:       VideoClip?
+        public var time:       NSTimeInterval?;
+        public var annotation: VideoClipAnnotation?;
+        public var handle:     HitHandle = .None;
+    
+        internal init(area: HitArea) {
+            self.area = area;
+        }
+        
+        public var description: String {
+            get {
+                return "\(area) \(handle) \(time) \(annotation?.text)";
+            }
+        }
+    }
+
+    public func hitTest(point: NSPoint) -> HitTest {
+        for line in layoutDigest.lines {
+            if !line.rect.contains(point) {
+                continue;
+            }
+            
+            var npoint  = point;
+            var hitTest = HitTest(area: .Thread)
+
+            if let first = line.clips.first {
+                let ox = first.frame.origin.x;
+            
+                if npoint.x < ox {
+                    npoint.x     = ox;
+                    hitTest.time = first.time(0);
+                }
+            }
+
+            if let last = line.clips.last {
+                let mx = last.frame.maxX;
+            
+                if npoint.x > mx {
+                    npoint.x     = mx;
+                    hitTest.time = last.time(CGFloat.max);
+                }
+            }
+            
+            for clip in line.clips {
+                let clipFrame = clip.frame;
+            
+                if between(npoint.x, clipFrame.origin.x, clipFrame.origin.x + clipFrame.size.width) {
+                    hitTest.time = clip.time(point.x);
+                    hitTest.clip = clip.entry?.clip;
+                    
+                    if clipFrame.contains(npoint) {
+                        hitTest.area = .Clip;
+                    }
+                    else {
+                        hitTest.area = .Thread;
+                    }
+                    
+                    break;
+                }
+            }
+            
+            for annotation in line.annotations {
+                let annotationFrame = annotation.frame;
+
+                if annotationFrame.contains(npoint) {
+                    hitTest.annotation = annotation.annotation;
+                    hitTest.area       = .Annotation;
+                    
+                    if abs(annotationFrame.minX - npoint.x) < 4 {
+                        hitTest.handle = .Left;
+                        
+                        if abs(annotationFrame.maxX - npoint.x) < 4 {
+                            // Hummm... It touches both...
+                            if abs(annotationFrame.maxX - npoint.x) < (annotationFrame.size.width / 2) {
+                                hitTest.handle = .Right;
+                            }
+                        }
+                    }
+                    else if abs(annotationFrame.maxX - npoint.x) < 4 {
+                        hitTest.handle = .Right;
+                    }
+                }
+            }
+            
+            return hitTest;
+        }
+    
+        return HitTest(area: .Background);
+    }
+    
+    public override func mouseMoved(event: NSEvent) {
+        self.window?.title = hitTest(self.convertPoint(event.locationInWindow, fromView: nil)).description;
     }
 }

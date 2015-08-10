@@ -62,11 +62,11 @@
 			isa = PBXGroup;
 			children = (
 				7B97B5041B77E4BB004BB472 /* AppDelegate.swift */,
-				7B97B5061B77E4BB004BB472 /* ViewController.swift */,
 				7B97B5081B77E4BB004BB472 /* Assets.xcassets */,
-				7B97B50A1B77E4BB004BB472 /* Main.storyboard */,
-				7B97B50D1B77E4BB004BB472 /* Info.plist */,
 				7B97B51E1B77E5CB004BB472 /* DataSource.swift */,
+				7B97B50D1B77E4BB004BB472 /* Info.plist */,
+				7B97B50A1B77E4BB004BB472 /* Main.storyboard */,
+				7B97B5061B77E4BB004BB472 /* ViewController.swift */,
 			);
 			path = VideoClipAnnotationTest;
 			sourceTree = "<group>";

@@ -21,17 +21,32 @@ public class VideoClipLineEntryView : NSView {
     
     public override func drawRect(dirtyRect: NSRect) {
         if let entry = self.entry {
-            let s = "\(entry.time.start) - \(entry.time.end)" as NSString
-
-            s.drawAtPoint(NSPoint(x: 0, y: 0), withAttributes: nil);
+            let rect = self.bounds;
+            
+            switch (entry.edge) {
+            case .Complete:
+                NSBezierPath(roundedRect: rect, radius: 2.5).setClip();
+                break;
+            case .Partial:
+                break;
+            case .Start:
+                NSBezierPath(roundedLeftRect: rect, radius: 2.5).setClip();
+                break;
+            case .End:
+                NSBezierPath(roundedRightRect: rect, radius: 2.5).setClip();
+                break;
+            }
+            
+            NSColor.blueColor().setFill();
+            NSRectFill(rect);
         }
-        else {
-            let s = "<NIL>" as NSString
-
-            s.drawAtPoint(NSPoint(x: 0, y: 0), withAttributes: nil);
+    }
+    
+    public func time(x: CGFloat) -> NSTimeInterval {
+        if let entry = self.entry {
+            return entry.time(x);
         }
         
-        NSColor.blueColor().setFill();
-        NSRectFill(self.bounds);
+        return NSTimeInterval(-1);
     }
 }

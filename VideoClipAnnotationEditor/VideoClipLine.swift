@@ -11,22 +11,23 @@ internal class VideoClipLine {
     var threads: [VideoClipAnnotationThread] = [];
     var entries: [VideoClipLineEntry]        = [];
     
-    func placeAnnotation(annotation: VideoClipAnnotation, position: NSRange) -> VideoClipAnnotationThread {
+    func placeAnnotation(annotation: VideoClipAnnotation, position: NSRange, edge: EdgeType) -> VideoClipAnnotationThread {
         for thread in threads {
-            if thread.reserveAnnotation(annotation, position: position) {
+            if thread.reserveAnnotation(annotation, position: position, edge: edge) {
                 return thread;
             }
         }
         
         let newThread = VideoClipAnnotationThread();
         
-        newThread.reserveAnnotation(annotation, position: position);
+        newThread.reserveAnnotation(annotation, position: position, edge: edge);
         threads.append(newThread);
         return newThread;
     }
     
     func placeClip(clip: VideoClip, time: TimeRange, position: NSRange) -> VideoClipLineEntry {
-        let entry = VideoClipLineEntry(clip: clip, time: time, position: position);
+        let full  = TimeRange(start: 0, end: clip.duration);
+        let entry = VideoClipLineEntry(clip: clip, time: time, position: position, edge: full.edge(time));
         
         entries.append(entry);
         
@@ -37,7 +38,7 @@ internal class VideoClipLine {
                 continue;
             }
             
-            placeAnnotation(annotation, position: entry.position(intersect))
+            placeAnnotation(annotation, position: entry.position(intersect), edge: annotation.time.edge(intersect))
         }
         
         return entry;

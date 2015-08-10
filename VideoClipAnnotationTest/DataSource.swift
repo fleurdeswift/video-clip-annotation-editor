@@ -23,7 +23,7 @@ public class TestClipAnnotation : VideoClipAnnotation {
 public class TestClip : VideoClip {
     public var duration: NSTimeInterval {
         get {
-            return 60 * 3 - 0.7;
+            return 60 * 3 + 0.7;
         }
     };
     

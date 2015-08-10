@@ -20,6 +20,7 @@
 		7B97B4F31B77E005004BB472 /* VideoClipLineEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4F21B77E005004BB472 /* VideoClipLineEntryView.swift */; };
 		7B97B4F51B77E047004BB472 /* VideoClipAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4F41B77E047004BB472 /* VideoClipAnnotationView.swift */; };
 		7B97B4F71B77E07F004BB472 /* VideoClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4F61B77E07F004BB472 /* VideoClipView.swift */; };
+		7B97B5291B784A81004BB472 /* EdgeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B5281B784A81004BB472 /* EdgeType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		7B97B4F21B77E005004BB472 /* VideoClipLineEntryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipLineEntryView.swift; sourceTree = "<group>"; };
 		7B97B4F41B77E047004BB472 /* VideoClipAnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipAnnotationView.swift; sourceTree = "<group>"; };
 		7B97B4F61B77E07F004BB472 /* VideoClipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipView.swift; sourceTree = "<group>"; };
+		7B97B5281B784A81004BB472 /* EdgeType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 		7B97B4D61B77DC26004BB472 /* VideoClipAnnotationEditor */ = {
 			isa = PBXGroup;
 			children = (
+				7B97B5281B784A81004BB472 /* EdgeType.swift */,
 				7B97B4D91B77DC26004BB472 /* Info.plist */,
 				7B97B4E31B77DD8C004BB472 /* TimeRange.swift */,
 				7B97B4E51B77DDEB004BB472 /* VideoClip.swift */,
@@ -184,6 +187,7 @@
 				7B97B4E81B77DE18004BB472 /* VideoClipDataSource.swift in Sources */,
 				7B97B4EC1B77DEF1004BB472 /* VideoClipLineEntry.swift in Sources */,
 				7B97B4E21B77DD66004BB472 /* VideoClipAnnotation.swift in Sources */,
+				7B97B5291B784A81004BB472 /* EdgeType.swift in Sources */,
 				7B97B4F11B77DF82004BB472 /* VideoClipLine.swift in Sources */,
 				7B97B4EA1B77DEAC004BB472 /* VideoClipAnnotationThread.swift in Sources */,
 				7B97B4E01B77DCEC004BB472 /* VideoClipAnnotationColor.swift in Sources */,

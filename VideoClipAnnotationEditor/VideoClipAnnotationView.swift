@@ -10,6 +10,7 @@ import ExtraAppKit
 
 public class VideoClipAnnotationView : NSView {
     internal var annotation: VideoClipAnnotation?
+    internal var edge: EdgeType = .Complete;
 
     internal init(frame: NSRect, annotation: VideoClipAnnotation) {
         self.annotation = annotation;
@@ -28,8 +29,20 @@ public class VideoClipAnnotationView : NSView {
             
             var rect = self.bounds;
             
-            NSBezierPath(roundedRect: rect, radius: 2.5).setClip();
-            
+            switch (edge) {
+            case .Complete:
+                NSBezierPath(roundedRect: rect, radius: 2.5).setClip();
+                break;
+            case .Partial:
+                break;
+            case .Start:
+                NSBezierPath(roundedLeftRect: rect, radius: 2.5).setClip();
+                break;
+            case .End:
+                NSBezierPath(roundedRightRect: rect, radius: 2.5).setClip();
+                break;
+            }
+                
             annotation.color.backgroundColor.set();
             NSRectFill(self.bounds);
             
