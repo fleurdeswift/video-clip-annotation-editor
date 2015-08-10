@@ -37,12 +37,20 @@ internal class VideoClipLineEntry {
         self.edge     = edge;
     }
     
-    func location(t: NSTimeInterval) -> CGFloat {
+    func position(t: NSTimeInterval) -> CGFloat {
         return CGFloat(position.location) + clamp(CGFloat(NSTimeInterval(position.length) / time.length * (t - time.start)), 0, CGFloat(position.length));
     }
 
     func position(t: TimeRange) -> NSRange {
-        return NSRange(start: location(t.start), end: location(t.end));
+        return NSRange(start: position(t.start), end: position(t.end));
+    }
+
+    func positionInView(t: NSTimeInterval) -> CGFloat {
+        return clamp(CGFloat(NSTimeInterval(position.length) / time.length * (t - time.start)), 0, CGFloat(position.length));
+    }
+
+    func positionInView(t: TimeRange) -> NSRange {
+        return NSRange(start: positionInView(t.start), end: positionInView(t.end));
     }
     
     func time(x: CGFloat) -> NSTimeInterval {

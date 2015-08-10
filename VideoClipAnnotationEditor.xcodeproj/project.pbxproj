@@ -21,6 +21,8 @@
 		7B97B4F51B77E047004BB472 /* VideoClipAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4F41B77E047004BB472 /* VideoClipAnnotationView.swift */; };
 		7B97B4F71B77E07F004BB472 /* VideoClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4F61B77E07F004BB472 /* VideoClipView.swift */; };
 		7B97B5291B784A81004BB472 /* EdgeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B5281B784A81004BB472 /* EdgeType.swift */; };
+		7B97B52B1B78595F004BB472 /* VideoClipDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B52A1B78595F004BB472 /* VideoClipDelegate.swift */; };
+		7B97B52D1B785B4E004BB472 /* VideoClipPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B52C1B785B4E004BB472 /* VideoClipPoint.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		7B97B4F41B77E047004BB472 /* VideoClipAnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipAnnotationView.swift; sourceTree = "<group>"; };
 		7B97B4F61B77E07F004BB472 /* VideoClipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipView.swift; sourceTree = "<group>"; };
 		7B97B5281B784A81004BB472 /* EdgeType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeType.swift; sourceTree = "<group>"; };
+		7B97B52A1B78595F004BB472 /* VideoClipDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipDelegate.swift; sourceTree = "<group>"; };
+		7B97B52C1B785B4E004BB472 /* VideoClipPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipPoint.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,9 +88,11 @@
 				7B97B4E91B77DEAC004BB472 /* VideoClipAnnotationThread.swift */,
 				7B97B4F41B77E047004BB472 /* VideoClipAnnotationView.swift */,
 				7B97B4E71B77DE18004BB472 /* VideoClipDataSource.swift */,
+				7B97B52A1B78595F004BB472 /* VideoClipDelegate.swift */,
 				7B97B4F01B77DF82004BB472 /* VideoClipLine.swift */,
 				7B97B4EB1B77DEF1004BB472 /* VideoClipLineEntry.swift */,
 				7B97B4F21B77E005004BB472 /* VideoClipLineEntryView.swift */,
+				7B97B52C1B785B4E004BB472 /* VideoClipPoint.swift */,
 				7B97B4F61B77E07F004BB472 /* VideoClipView.swift */,
 			);
 			path = VideoClipAnnotationEditor;
@@ -188,6 +194,8 @@
 				7B97B4EC1B77DEF1004BB472 /* VideoClipLineEntry.swift in Sources */,
 				7B97B4E21B77DD66004BB472 /* VideoClipAnnotation.swift in Sources */,
 				7B97B5291B784A81004BB472 /* EdgeType.swift in Sources */,
+				7B97B52D1B785B4E004BB472 /* VideoClipPoint.swift in Sources */,
+				7B97B52B1B78595F004BB472 /* VideoClipDelegate.swift in Sources */,
 				7B97B4F11B77DF82004BB472 /* VideoClipLine.swift in Sources */,
 				7B97B4EA1B77DEAC004BB472 /* VideoClipAnnotationThread.swift in Sources */,
 				7B97B4E01B77DCEC004BB472 /* VideoClipAnnotationColor.swift in Sources */,

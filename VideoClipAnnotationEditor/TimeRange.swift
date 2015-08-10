@@ -20,6 +20,10 @@ public struct TimeRange {
         self.start  = start;
         self.length = end - start;
     }
+    
+    public func contains(t: NSTimeInterval) -> Bool {
+        return (t >= start) && (t < end);
+    }
 
     public func intersects(range2: TimeRange) -> Bool {
         return (self.start < range2.start + range2.length && range2.start < self.start + self.length);

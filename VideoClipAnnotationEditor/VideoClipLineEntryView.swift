@@ -9,7 +9,27 @@ import Foundation
 
 public class VideoClipLineEntryView : NSView {
     internal var entry: VideoClipLineEntry?;
-
+    
+    internal var currentTime: NSTimeInterval? {
+        didSet {
+            if let t = currentTime, let entry = entry {
+                if entry.time.contains(t) {
+                    currentTimeX = entry.positionInView(t)
+                }
+                else {
+                    currentTimeX = nil;
+                }
+            }
+            else {
+                currentTimeX = nil;
+            }
+            
+            self.needsDisplay = true;
+        }
+    }
+    
+    internal var currentTimeX: CGFloat?;
+    
     internal init(frame: NSRect, entry: VideoClipLineEntry) {
         self.entry = entry;
         super.init(frame: frame);
@@ -39,6 +59,11 @@ public class VideoClipLineEntryView : NSView {
             
             NSColor.blueColor().setFill();
             NSRectFill(rect);
+            
+            if let ctx = currentTimeX {
+                NSColor.whiteColor().set();
+                NSRectFill(NSRect(x: ctx, y: 0, width: 1, height: rect.size.height))
+            }
         }
     }
     
@@ -48,5 +73,13 @@ public class VideoClipLineEntryView : NSView {
         }
         
         return NSTimeInterval(-1);
+    }
+    
+    public func position(t: NSTimeInterval) -> CGFloat {
+        if let entry = self.entry {
+            return entry.positionInView(t);
+        }
+        
+        return -CGFloat.max;
     }
 }

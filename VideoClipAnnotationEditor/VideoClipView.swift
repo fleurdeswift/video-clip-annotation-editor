@@ -13,6 +13,7 @@ public class VideoClipView : ScrollableView {
         return max(1, Int(round(duration / sampleRate)));
     }
 
+    // MARK: IBOutlets
     public var dataSource: VideoClipDataSource? {
         didSet {
             reloadData();
@@ -29,8 +30,63 @@ public class VideoClipView : ScrollableView {
             self.dataSource = newValue as? VideoClipDataSource;
         }
     }
+
+    public var delegate: VideoClipDelegate?;
+
+    @IBOutlet
+    public var delegateIB: VideoClipDelegateIB? {
+        get {
+            return self.delegate as? VideoClipDelegateIB;
+        }
+
+        set {
+            self.delegate = newValue as? VideoClipDelegate;
+        }
+    }
     
-    internal var clipViews: [NSView] = [];
+    // MARK: Annotation Style
+    public var annotationFont: NSFont = NSFont.systemFontOfSize(NSFont.smallSystemFontSize()) {
+        didSet {
+            _annotationStyle = nil;
+        }
+    }
+    
+    private var _annotationStyle: [String: AnyObject]?;
+    public var annotationStyle: [String: AnyObject] {
+        get {
+            if let a = _annotationStyle {
+                return a;
+            }
+            
+            let p = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle;
+            
+            p.lineBreakMode = NSLineBreakMode.ByTruncatingTail;
+            
+            let a = [
+                NSFontAttributeName:           self.annotationFont,
+                NSParagraphStyleAttributeName: p.copy()
+            ];
+            
+            _annotationStyle = a;
+            return a;
+        }
+    }
+    
+    private var _annotationHeight: CGFloat?;
+    public var annotationHeight: CGFloat {
+        get {
+            if let a = _annotationHeight {
+                return a;
+            }
+            
+            let p = ("X" as NSString).sizeWithAttributes(self.annotationStyle).height;
+            
+            _annotationHeight = p;
+            return p;
+        }
+    }
+
+    // MARK: Layout
     internal var _contentSize: CGSize = CGSize(width: 100, height: 100)
     
     public override var contentSize: CGSize {
@@ -106,47 +162,6 @@ public class VideoClipView : ScrollableView {
         return [];
     }
     
-    public var annotationFont: NSFont = NSFont.systemFontOfSize(NSFont.smallSystemFontSize()) {
-        didSet {
-            _annotationStyle = nil;
-        }
-    }
-    
-    private var _annotationStyle: [String: AnyObject]?;
-    public var annotationStyle: [String: AnyObject] {
-        get {
-            if let a = _annotationStyle {
-                return a;
-            }
-            
-            let p = NSParagraphStyle.defaultParagraphStyle().mutableCopy() as! NSMutableParagraphStyle;
-            
-            p.lineBreakMode = NSLineBreakMode.ByTruncatingTail;
-            
-            let a = [
-                NSFontAttributeName:           self.annotationFont,
-                NSParagraphStyleAttributeName: p.copy()
-            ];
-            
-            _annotationStyle = a;
-            return a;
-        }
-    }
-    
-    private var _annotationHeight: CGFloat?;
-    public var annotationHeight: CGFloat {
-        get {
-            if let a = _annotationHeight {
-                return a;
-            }
-            
-            let p = ("X" as NSString).sizeWithAttributes(self.annotationStyle).height;
-            
-            _annotationHeight = p;
-            return p;
-        }
-    }
-    
     internal struct LayoutDigestLine {
         var rect: NSRect;
         var clips = [VideoClipLineEntryView]();
@@ -210,17 +225,29 @@ public class VideoClipView : ScrollableView {
             for entry in line.entries {
                 let position  = entry.position;
                 let entryRect = NSRect(x: CGFloat(position.location), y: lineRect.origin.y, width: CGFloat(position.length), height: lineRect.size.height);
-            
+                var newClipView: VideoClipLineEntryView;
+                
                 if let clipView = clipViews.first {
                     clipView.entry = entry;
                     clipView.frame = entryRect;
                     clipViews.removeAtIndex(0);
                     lineDigest.clips.append(clipView);
+                    newClipView = clipView;
                 }
                 else {
                     let clipView = VideoClipLineEntryView(frame: entryRect, entry: entry);
                     self.addSubview(clipView);
                     lineDigest.clips.append(clipView);
+                    newClipView = clipView;
+                }
+                
+                if let ct = _currentTime {
+                    if ct.clip === entry.clip {
+                        newClipView.currentTime = ct.time;
+                    }
+                    else {
+                        newClipView.currentTime = nil;
+                    }
                 }
             }
             
@@ -291,8 +318,7 @@ public class VideoClipView : ScrollableView {
         }
     }
     
-    internal var tracking: NSTrackingArea?;
-    
+    // MARK: Hit Testing
     public override func frameDidChange() {
         reloadData();
     }
@@ -304,13 +330,8 @@ public class VideoClipView : ScrollableView {
                             NSTrackingAreaOptions.MouseEnteredAndExited,
                             NSTrackingAreaOptions.MouseMoved
         ]);
-
-        if let tracking = self.tracking {
-            self.removeTrackingArea(tracking);
-        }
         
-        tracking = NSTrackingArea(rect: self.bounds, options: options, owner: self, userInfo: nil);
-        self.addTrackingArea(tracking!);
+        self.addTrackingArea(NSTrackingArea(rect: self.bounds, options: options, owner: self, userInfo: nil));
     }
 
     public enum HitArea {
@@ -414,6 +435,92 @@ public class VideoClipView : ScrollableView {
     }
     
     public override func mouseMoved(event: NSEvent) {
-        self.window?.title = hitTest(self.convertPoint(event.locationInWindow, fromView: nil)).description;
+        let h: HitTest = hitTest(self.convertPoint(event.locationInWindow, fromView: nil));
+        
+        if let clip = h.clip, let time = h.time {
+            if h.area == .Clip {
+                self.currentTime = VideoClipPoint(clip: clip, time: time);
+            }
+        }
+        
+        self.window?.title = h.description;
+    }
+
+    public override func mouseDown(event: NSEvent) {
+        let h: HitTest = hitTest(self.convertPoint(event.locationInWindow, fromView: nil));
+        
+        if let clip = h.clip, let time = h.time {
+            self.currentTime = VideoClipPoint(clip: clip, time: time);
+        }
+    }
+    
+    // MARK: Current Time
+    private var _currentTime: VideoClipPoint?;
+    public var currentTime: VideoClipPoint? {
+        get {
+            return _currentTime;
+        }
+        
+        set {
+            let oldValue = _currentTime;
+        
+            if let v = newValue, let ov = oldValue {
+                if abs(v.time - ov.time) < NSTimeThreshold {
+                    return;
+                }
+            }
+            else if newValue == nil {
+                if _currentTime == nil {
+                    return;
+                }
+            }
+            
+            _currentTime = newValue;
+            updateCurrentTime(oldValue, new: newValue);
+            
+            if let delegate = self.delegate {
+                delegate.currentTimeChanged(self, point: newValue);
+            }
+        }
+    }
+    
+    func viewsForClip(clip: VideoClip) -> [VideoClipLineEntryView] {
+        var clips: [VideoClipLineEntryView] = [];
+    
+        for view in self.subviews {
+            if let clipView = view as? VideoClipLineEntryView {
+                if let clipInView = clipView.entry?.clip {
+                    if clipInView === clip {
+                        clips.append(clipView);
+                    }
+                }
+            }
+        }
+        
+        return clips;
+    }
+    
+    private func updateCurrentTime(old: VideoClipPoint?, new: VideoClipPoint?) {
+        if let oldClip = old?.clip, newClip = new?.clip {
+            if oldClip === newClip {
+                for clipView in viewsForClip(newClip) {
+                    clipView.currentTime = new!.time;
+                }
+                
+                return;
+            }
+        }
+
+        if let oldClip = old?.clip {
+            for clipView in viewsForClip(oldClip) {
+                clipView.currentTime = nil;
+            }
+        }
+
+        if let newClip = new?.clip {
+            for clipView in viewsForClip(newClip) {
+                clipView.currentTime = new!.time;
+            }
+        }
     }
 }

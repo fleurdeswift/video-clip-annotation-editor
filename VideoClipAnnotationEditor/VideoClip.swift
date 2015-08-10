@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol VideoClip {
+public protocol VideoClip : class {
     var duration:     NSTimeInterval        { get };
     var annotations:  [VideoClipAnnotation] { get };
     var previewWidth: Int                   { get };
