@@ -9,7 +9,7 @@ import Foundation
 
 public protocol VideoClipDelegate : class {
     func currentTimeChanged(videoClipView: VideoClipView, point: VideoClipPoint?);
-    func selectionChanged(videoClipView: VideoClipView)
+    func selectionChanged(videoClipView: VideoClipView, range: VideoClipRange?)
 }
 
 @objc

@@ -401,7 +401,8 @@ public class VideoClipView : ScrollableView {
                         hitTest.area = .Thread;
                     }
                     
-                    break;
+                    hitTest.handle = clip.selectionHandle(npoint.x - clipFrame.origin.x);
+                    return hitTest;
                 }
             }
             
@@ -446,14 +447,44 @@ public class VideoClipView : ScrollableView {
         self.window?.title = h.description;
     }
 
+    private var mouseDownHitTest: HitTest?;
+
     public override func mouseDown(event: NSEvent) {
         let h: HitTest = hitTest(self.convertPoint(event.locationInWindow, fromView: nil));
         
-        if let clip = h.clip, let time = h.time {
-            self.currentTime = VideoClipPoint(clip: clip, time: time);
+        if h.clip != nil && h.time != nil && h.area == .Clip {
+            mouseDownHitTest = h;
+        }
+        else {
+            mouseDownHitTest = nil;
+        }
+        
+        dragging = false;
+    }
+    
+    internal var dragging = false;
+    
+    public override func mouseDragged(event: NSEvent) {
+        if let mouseDownHitTest = self.mouseDownHitTest {
+            dragging = true;
+            
+            let h: HitTest = hitTest(self.convertPoint(event.locationInWindow, fromView: nil));
+            
+            if h.clip != nil && h.time != nil && h.area == .Clip && mouseDownHitTest.clip === h.clip {
+                self.selection = VideoClipRange(clip: mouseDownHitTest.clip!, time: TimeRange(t0: mouseDownHitTest.time!, t1: h.time!))
+            }
         }
     }
     
+    public override func mouseUp(event: NSEvent) {
+        if dragging {
+            dragging = false;
+        }
+        else {
+            self.selection = nil;
+        }
+    }
+
     // MARK: Current Time
     private var _currentTime: VideoClipPoint?;
     public var currentTime: VideoClipPoint? {
@@ -520,6 +551,53 @@ public class VideoClipView : ScrollableView {
         if let newClip = new?.clip {
             for clipView in viewsForClip(newClip) {
                 clipView.currentTime = new!.time;
+            }
+        }
+    }
+    
+    // MARK: Selection
+    private var _currentSelection: VideoClipRange?;
+    public var selection: VideoClipRange? {
+        get {
+            return _currentSelection;
+        }
+        
+        set {
+            let oldValue = _currentSelection;
+        
+            if newValue == nil && _currentTime == nil {
+                return;
+            }
+            
+            _currentSelection = newValue;
+            updateSelection(oldValue, new: newValue);
+            
+            if let delegate = self.delegate {
+                delegate.selectionChanged(self, range: newValue);
+            }
+        }
+    }
+    
+    private func updateSelection(old: VideoClipRange?, new: VideoClipRange?) {
+        if let oldClip = old?.clip, newClip = new?.clip {
+            if oldClip === newClip {
+                for clipView in viewsForClip(newClip) {
+                    clipView.selection = new!.time;
+                }
+                
+                return;
+            }
+        }
+
+        if let oldClip = old?.clip {
+            for clipView in viewsForClip(oldClip) {
+                clipView.selection = nil;
+            }
+        }
+
+        if let newClip = new?.clip {
+            for clipView in viewsForClip(newClip) {
+                clipView.selection = new!.time;
             }
         }
     }

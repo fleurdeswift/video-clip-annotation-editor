@@ -20,6 +20,10 @@ public struct TimeRange {
         self.start  = start;
         self.length = end - start;
     }
+
+    public init(t0: NSTimeInterval, t1: NSTimeInterval) {
+        self.init(start: min(t0, t1), end: max(t0, t1));
+    }
     
     public func contains(t: NSTimeInterval) -> Bool {
         return (t >= start) && (t < end);

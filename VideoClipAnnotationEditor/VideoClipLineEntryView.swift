@@ -7,14 +7,61 @@
 
 import Foundation
 
+private func generateSelectionBlock(cornerRadius: CGFloat) -> (rect: NSRect) -> Bool {
+    let borderColor = NSColor(red: 1,   green: 0.83, blue: 0.03, alpha: 1);
+    let lineColor   = NSColor(red: 0.2, green: 0.2,  blue: 0.2,  alpha: 1);
+
+    return { (rect: NSRect) -> Bool in
+        var nrect = rect;
+        
+        nrect.origin.x    += 5;
+        nrect.origin.y    += 1;
+        nrect.size.width  -= 10;
+        nrect.size.height -= 2;
+        
+        let bezierPath = NSBezierPath(roundedRect:nrect, radius:cornerRadius);
+        
+        bezierPath.lineWidth = 2;
+        borderColor.set();
+        bezierPath.stroke();
+        
+        let t = rect.height / 3;
+        
+        let leftHandle = NSBezierPath(roundedLeftRect: NSRect(x: rect.origin.x, y: rect.origin.y + t, width: 4, height: t), radius: cornerRadius / 2);
+        leftHandle.fill();
+
+        let rightHandle = NSBezierPath(roundedRightRect: NSRect(x: rect.maxX - 4, y: rect.origin.y + t, width: 4, height: t), radius: cornerRadius / 2);
+        rightHandle.fill();
+
+        let leftLine = NSBezierPath(rect: NSRect(x: rect.origin.x + 2, y: rect.origin.y + t + 4, width: 1, height: t - 8))
+        lineColor.set();
+        leftLine.fill();
+
+        let rightLine = NSBezierPath(rect: NSRect(x: rect.maxX - 3, y: rect.origin.y + t + 4, width: 1, height: t - 8))
+        rightLine.fill();
+        return true;
+    };
+}
+
+private func generateSelectionImage(cornerRadius: CGFloat) -> NSImage {
+    let image = NSImage(size: NSSize(width: 32, height: 80), flipped: true, drawingHandler: generateSelectionBlock(cornerRadius))
+    
+    image.capInsets    = NSEdgeInsetsMake(35, 14, 35, 14);
+    image.resizingMode = NSImageResizingMode.Tile;
+    return image;
+}
+
+private let selectionImage = generateSelectionImage(4);
+
 public class VideoClipLineEntryView : NSView {
     internal var entry: VideoClipLineEntry?;
     
+    // MARK: Current Time
     internal var currentTime: NSTimeInterval? {
         didSet {
             if let t = currentTime, let entry = entry {
                 if entry.time.contains(t) {
-                    currentTimeX = entry.positionInView(t)
+                    currentTimeX = entry.positionInView(t);
                 }
                 else {
                     currentTimeX = nil;
@@ -30,6 +77,38 @@ public class VideoClipLineEntryView : NSView {
     
     internal var currentTimeX: CGFloat?;
     
+    // MARK: Selection
+    internal var selection: TimeRange? {
+        didSet {
+            if let t = selection, let entry = entry {
+                if entry.time.intersects(t) {
+                    selectionX = entry.positionInView(t);
+                }
+                else {
+                    selectionX = nil;
+                }
+            }
+            else {
+                selectionX = nil;
+            }
+            
+            self.window?.invalidateCursorRectsForView(self);
+            self.needsDisplay = true;
+        }
+    }
+    
+    internal var selectionX: NSRange?;
+    
+    public override func resetCursorRects() {
+        if let selx = selectionX {
+            let b = self.bounds;
+            
+            addCursorRect(NSRect(x: CGFloat(selx.location), y: 0, width: 4, height: b.size.height), cursor: NSCursor.resizeLeftCursor());
+            addCursorRect(NSRect(x: CGFloat(selx.end  - 4), y: 0, width: 4, height: b.size.height), cursor: NSCursor.resizeRightCursor());
+        }
+    }
+    
+    // MARK: Drawing
     internal init(frame: NSRect, entry: VideoClipLineEntry) {
         self.entry = entry;
         super.init(frame: frame);
@@ -61,8 +140,24 @@ public class VideoClipLineEntryView : NSView {
             NSRectFill(rect);
             
             if let ctx = currentTimeX {
-                NSColor.whiteColor().set();
-                NSRectFill(NSRect(x: ctx, y: 0, width: 1, height: rect.size.height))
+                var skip = false;
+            
+                if let superview = self.superview as? VideoClipView {
+                    skip = superview.dragging;
+                }
+            
+                if !skip {
+                    NSColor.whiteColor().set();
+                    NSRectFill(NSRect(x: ctx, y: 0, width: 1, height: rect.size.height))
+                }
+            }
+            
+            if let selx = selectionX {
+                selectionImage.drawInRect(NSRect(
+                    x:      CGFloat(selx.location),
+                    y:      rect.origin.y,
+                    width:  CGFloat(selx.length),
+                    height: rect.size.height));
             }
         }
     }
@@ -81,5 +176,18 @@ public class VideoClipLineEntryView : NSView {
         }
         
         return -CGFloat.max;
+    }
+    
+    internal func selectionHandle(x: CGFloat) -> VideoClipView.HitHandle {
+        if let selx = selectionX {
+            if between(x, CGFloat(selx.location), CGFloat(selx.location + 4)) {
+                return .Left;
+            }
+            else if between(x, CGFloat(selx.end - 4), CGFloat(selx.end)) {
+                return .Right;
+            }
+        }
+        
+        return .None;
     }
 }
