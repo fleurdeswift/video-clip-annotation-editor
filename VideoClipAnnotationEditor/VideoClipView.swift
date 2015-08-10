@@ -450,9 +450,18 @@ public class VideoClipView : ScrollableView {
     private var mouseDownHitTest: HitTest?;
 
     public override func mouseDown(event: NSEvent) {
-        let h: HitTest = hitTest(self.convertPoint(event.locationInWindow, fromView: nil));
+        var h: HitTest = hitTest(self.convertPoint(event.locationInWindow, fromView: nil));
         
         if h.clip != nil && h.time != nil && h.area == .Clip {
+            if let sel = _currentSelection {
+                if h.handle == .Right {
+                    h.time = sel.time.start;
+                }
+                else if h.handle == .Left {
+                    h.time = sel.time.end;
+                }
+            }
+        
             mouseDownHitTest = h;
         }
         else {

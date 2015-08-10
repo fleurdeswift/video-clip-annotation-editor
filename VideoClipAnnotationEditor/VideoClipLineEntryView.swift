@@ -82,7 +82,7 @@ public class VideoClipLineEntryView : NSView {
         didSet {
             if let t = selection, let entry = entry {
                 if entry.time.intersects(t) {
-                    selectionX = entry.positionInView(t);
+                    selectionX = entry.positionInViewUnclampled(t);
                 }
                 else {
                     selectionX = nil;
