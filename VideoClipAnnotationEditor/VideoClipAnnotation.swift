@@ -7,8 +7,8 @@
 
 import Foundation
 
-public protocol VideoClipAnnotation {
+public protocol VideoClipAnnotation : class {
     var text:  String                   { get };
     var color: VideoClipAnnotationColor { get };
-    var time:  TimeRange                { get };
+    var time:  TimeRange                { get set };
 }

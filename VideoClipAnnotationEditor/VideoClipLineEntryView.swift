@@ -8,15 +8,15 @@
 import Foundation
 
 private func generateSelectionBlock(cornerRadius: CGFloat) -> (rect: NSRect) -> Bool {
-    let borderColor = NSColor(red: 1,   green: 0.83, blue: 0.03, alpha: 1);
-    let lineColor   = NSColor(red: 0.2, green: 0.2,  blue: 0.2,  alpha: 1);
+    let borderColor = NSColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1);
+    let lineColor   = NSColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 1);
 
     return { (rect: NSRect) -> Bool in
         var nrect = rect;
         
-        nrect.origin.x    += 5;
+        nrect.origin.x    += 1;
         nrect.origin.y    += 1;
-        nrect.size.width  -= 10;
+        nrect.size.width  -= 2;
         nrect.size.height -= 2;
         
         let bezierPath = NSBezierPath(roundedRect:nrect, radius:cornerRadius);
@@ -26,18 +26,11 @@ private func generateSelectionBlock(cornerRadius: CGFloat) -> (rect: NSRect) -> 
         bezierPath.stroke();
         
         let t = rect.height / 3;
-        
-        let leftHandle = NSBezierPath(roundedLeftRect: NSRect(x: rect.origin.x, y: rect.origin.y + t, width: 4, height: t), radius: cornerRadius / 2);
-        leftHandle.fill();
-
-        let rightHandle = NSBezierPath(roundedRightRect: NSRect(x: rect.maxX - 4, y: rect.origin.y + t, width: 4, height: t), radius: cornerRadius / 2);
-        rightHandle.fill();
-
-        let leftLine = NSBezierPath(rect: NSRect(x: rect.origin.x + 2, y: rect.origin.y + t + 4, width: 1, height: t - 8))
+        let leftLine = NSBezierPath(rect: NSRect(x: rect.origin.x + 0.5, y: rect.origin.y + t + 4, width: 1, height: t))
         lineColor.set();
         leftLine.fill();
 
-        let rightLine = NSBezierPath(rect: NSRect(x: rect.maxX - 3, y: rect.origin.y + t + 4, width: 1, height: t - 8))
+        let rightLine = NSBezierPath(rect: NSRect(x: rect.maxX - 1.5, y: rect.origin.y + t + 4, width: 1, height: t))
         rightLine.fill();
         return true;
     };

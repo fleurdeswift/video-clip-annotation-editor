@@ -37,12 +37,15 @@ private let sGrayColor = VideoClipAnnotationColor(
 
 
 public struct VideoClipAnnotationColor {
-    public let backgroundColor: NSColor;
-    public let textColor:       NSColor;
+    public let backgroundColor:  NSColor;
+    public let textColor:        NSColor;
+    public let selectedColor:    NSColor;
     
     public init(background: NSColor, text: NSColor) {
-        self.backgroundColor = background;
+        self.selectedColor   = background;
         self.textColor       = text;
+        self.backgroundColor = background.blendedColorWithFraction(1.0 / 3.0, ofColor:NSColor.whiteColor())!;
+
     }
     
     public static func redColor() -> VideoClipAnnotationColor {

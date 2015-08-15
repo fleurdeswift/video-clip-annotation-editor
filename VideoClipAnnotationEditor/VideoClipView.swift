@@ -285,11 +285,15 @@ public class VideoClipView : ScrollableView {
                                 x:      CGFloat(block.position.location),
                                 y:      threadRect.origin.y,
                                 width:  CGFloat(block.position.length),
-                                height: threadRect.size.height - 1), annotation: block.annotation);
+                                height: threadRect.size.height - 1));
                         self.addSubview(blockView);
                     }
                     
-                    blockView.edge = block.edge;
+                    blockView.configure(block.clip,
+                        annotation: block.annotation,
+                        edge:       block.edge,
+                        selected:   self.annotationSelection.contains(HashAnnotation(block.annotation)))
+                    
                     lineDigest.annotations.append(blockView);
                 }
             }
@@ -481,16 +485,27 @@ public class VideoClipView : ScrollableView {
             
             if h.clip != nil && h.time != nil && h.area == .Clip && mouseDownHitTest.clip === h.clip {
                 self.selection = VideoClipRange(clip: mouseDownHitTest.clip!, time: TimeRange(t0: mouseDownHitTest.time!, t1: h.time!))
+                self.currentTime = VideoClipPoint(clip: mouseDownHitTest.clip!, time: h.time!);
             }
         }
     }
     
     public override func mouseUp(event: NSEvent) {
         if dragging {
+            if let selection = self.selection {
+                if self.annotationSelection.count == 1 {
+                    if let annotation = self.annotationSelection.first {
+                        annotation.ref.time = selection.time;
+                        reloadData();
+                    }
+                }
+            }
+        
             dragging = false;
         }
         else {
             self.selection = nil;
+            self.annotationSelection.removeAll();
         }
     }
 
@@ -610,4 +625,60 @@ public class VideoClipView : ScrollableView {
             }
         }
     }
+    
+    // MARK: Annotation Selection
+    private var _currentAnnotationSelection: Set<HashAnnotation> = Set<HashAnnotation>();
+    public var annotationSelection: Set<HashAnnotation> {
+        get {
+            return _currentAnnotationSelection;
+        }
+        
+        set {
+            let oldValue = _currentAnnotationSelection;
+        
+            if oldValue == newValue {
+                return;
+            }
+            
+            _currentAnnotationSelection = newValue;
+            updateSelection(oldValue, new: newValue);
+            
+            if let delegate = self.delegate {
+                delegate.selectionChanged(self, annotations: newValue);
+            }
+        }
+    }
+    
+    private func updateSelection(old: Set<HashAnnotation>, new: Set<HashAnnotation>) {
+        for view in self.subviews {
+            if let annotationView = view as? VideoClipAnnotationView {
+                if let annotation = annotationView.annotation {
+                    annotationView.selected = new.contains(HashAnnotation(annotation));
+                }
+                else {
+                    annotationView.selected = false;
+                }
+            }
+        }
+    }
 }
+
+public struct HashAnnotation : Hashable {
+    public let ref: VideoClipAnnotation;
+    
+    public init(_ ref: VideoClipAnnotation) {
+        self.ref = ref;
+    }
+
+    public var hashValue: Int {
+        get {
+            return unsafeAddressOf(ref).hashValue;
+        }
+    }
+}
+
+public func == (p1: HashAnnotation, p2: HashAnnotation) -> Bool {
+    return p1.ref === p2.ref;
+}
+
+

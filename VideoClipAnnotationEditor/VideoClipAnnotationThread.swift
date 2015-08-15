@@ -8,19 +8,19 @@
 import Foundation
 
 internal class VideoClipAnnotationThread {
-    var blocks: [(position: NSRange, annotation: VideoClipAnnotation, edge: EdgeType)] = [];
+    var blocks: [(position: NSRange, clip: VideoClip, annotation: VideoClipAnnotation, edge: EdgeType)] = [];
 
     init() {
     }
     
-    func reserveAnnotation(annotation: VideoClipAnnotation, position: NSRange, edge: EdgeType) -> Bool {
+    func reserveAnnotation(clip: VideoClip, annotation: VideoClipAnnotation, position: NSRange, edge: EdgeType) -> Bool {
         for block in blocks {
             if NSIntersectionRange(block.position, position).length > 0 {
                 return false;
             }
         }
         
-        blocks.append((position, annotation, edge));
+        blocks.append((position, clip, annotation, edge));
         return true;
     }
 }
