@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B36B09B1B894CAC009FBE7B /* VideoClipPreviewCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B36B09A1B894CAC009FBE7B /* VideoClipPreviewCache.swift */; };
 		7B97B4D81B77DC26004BB472 /* VideoClipAnnotationEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B97B4D71B77DC26004BB472 /* VideoClipAnnotationEditor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7B97B4E01B77DCEC004BB472 /* VideoClipAnnotationColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4DF1B77DCEC004BB472 /* VideoClipAnnotationColor.swift */; };
 		7B97B4E21B77DD66004BB472 /* VideoClipAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4E11B77DD66004BB472 /* VideoClipAnnotation.swift */; };
-		7B97B4E41B77DD8C004BB472 /* TimeRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4E31B77DD8C004BB472 /* TimeRange.swift */; };
 		7B97B4E61B77DDEB004BB472 /* VideoClip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4E51B77DDEB004BB472 /* VideoClip.swift */; };
 		7B97B4E81B77DE18004BB472 /* VideoClipDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4E71B77DE18004BB472 /* VideoClipDataSource.swift */; };
 		7B97B4EA1B77DEAC004BB472 /* VideoClipAnnotationThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B4E91B77DEAC004BB472 /* VideoClipAnnotationThread.swift */; };
@@ -26,12 +26,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7B36B09A1B894CAC009FBE7B /* VideoClipPreviewCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipPreviewCache.swift; sourceTree = "<group>"; };
 		7B97B4D41B77DC26004BB472 /* VideoClipAnnotationEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VideoClipAnnotationEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B97B4D71B77DC26004BB472 /* VideoClipAnnotationEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoClipAnnotationEditor.h; sourceTree = "<group>"; };
 		7B97B4D91B77DC26004BB472 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B97B4DF1B77DCEC004BB472 /* VideoClipAnnotationColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipAnnotationColor.swift; sourceTree = "<group>"; };
 		7B97B4E11B77DD66004BB472 /* VideoClipAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipAnnotation.swift; sourceTree = "<group>"; };
-		7B97B4E31B77DD8C004BB472 /* TimeRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeRange.swift; sourceTree = "<group>"; };
 		7B97B4E51B77DDEB004BB472 /* VideoClip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClip.swift; sourceTree = "<group>"; };
 		7B97B4E71B77DE18004BB472 /* VideoClipDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipDataSource.swift; sourceTree = "<group>"; };
 		7B97B4E91B77DEAC004BB472 /* VideoClipAnnotationThread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoClipAnnotationThread.swift; sourceTree = "<group>"; };
@@ -80,7 +80,6 @@
 			children = (
 				7B97B5281B784A81004BB472 /* EdgeType.swift */,
 				7B97B4D91B77DC26004BB472 /* Info.plist */,
-				7B97B4E31B77DD8C004BB472 /* TimeRange.swift */,
 				7B97B4E51B77DDEB004BB472 /* VideoClip.swift */,
 				7B97B4E11B77DD66004BB472 /* VideoClipAnnotation.swift */,
 				7B97B4DF1B77DCEC004BB472 /* VideoClipAnnotationColor.swift */,
@@ -93,6 +92,7 @@
 				7B97B4EB1B77DEF1004BB472 /* VideoClipLineEntry.swift */,
 				7B97B4F21B77E005004BB472 /* VideoClipLineEntryView.swift */,
 				7B97B52C1B785B4E004BB472 /* VideoClipPoint.swift */,
+				7B36B09A1B894CAC009FBE7B /* VideoClipPreviewCache.swift */,
 				7B97B4F61B77E07F004BB472 /* VideoClipView.swift */,
 			);
 			path = VideoClipAnnotationEditor;
@@ -185,7 +185,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B97B4E41B77DD8C004BB472 /* TimeRange.swift in Sources */,
 				7B97B4F51B77E047004BB472 /* VideoClipAnnotationView.swift in Sources */,
 				7B97B4F71B77E07F004BB472 /* VideoClipView.swift in Sources */,
 				7B97B4F31B77E005004BB472 /* VideoClipLineEntryView.swift in Sources */,
@@ -193,6 +192,7 @@
 				7B97B4E81B77DE18004BB472 /* VideoClipDataSource.swift in Sources */,
 				7B97B4EC1B77DEF1004BB472 /* VideoClipLineEntry.swift in Sources */,
 				7B97B4E21B77DD66004BB472 /* VideoClipAnnotation.swift in Sources */,
+				7B36B09B1B894CAC009FBE7B /* VideoClipPreviewCache.swift in Sources */,
 				7B97B5291B784A81004BB472 /* EdgeType.swift in Sources */,
 				7B97B52D1B785B4E004BB472 /* VideoClipPoint.swift in Sources */,
 				7B97B52B1B78595F004BB472 /* VideoClipDelegate.swift in Sources */,

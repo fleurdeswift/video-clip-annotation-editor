@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ExtraDataStructures
 
 internal class VideoClipLine {
     var threads: [VideoClipAnnotationThread] = [];
@@ -25,9 +26,9 @@ internal class VideoClipLine {
         return newThread;
     }
     
-    func placeClip(clip: VideoClip, time: TimeRange, position: NSRange) -> VideoClipLineEntry {
+    func placeClip(clip: VideoClip, time: TimeRange, position: NSRange, previewConfig: VideoClipPreviewConfiguration) -> VideoClipLineEntry {
         let full  = TimeRange(start: 0, end: clip.duration);
-        let entry = VideoClipLineEntry(clip: clip, time: time, position: position, edge: full.edge(time));
+        let entry = VideoClipLineEntry(clip: clip, time: time, position: position, edge: full.edge(time), previewConfig: previewConfig);
         
         entries.append(entry);
         

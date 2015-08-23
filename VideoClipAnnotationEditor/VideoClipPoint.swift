@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ExtraDataStructures
 
 public struct VideoClipPoint {
     public let clip: VideoClip;

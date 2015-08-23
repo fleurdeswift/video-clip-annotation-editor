@@ -14,6 +14,7 @@
 		7B97B51B1B77E51C004BB472 /* ExtraAppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B97B5191B77E51C004BB472 /* ExtraAppKit.framework */; };
 		7B97B51C1B77E51C004BB472 /* VideoClipAnnotationEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B97B51A1B77E51C004BB472 /* VideoClipAnnotationEditor.framework */; };
 		7B97B51F1B77E5CB004BB472 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B97B51E1B77E5CB004BB472 /* DataSource.swift */; };
+		7BC3BF241B8005B500997710 /* VLCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BC3BF231B8005B500997710 /* VLCKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		7B97B5191B77E51C004BB472 /* ExtraAppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ExtraAppKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B97B51A1B77E51C004BB472 /* VideoClipAnnotationEditor.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = VideoClipAnnotationEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B97B51E1B77E5CB004BB472 /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
+		7BC3BF231B8005B500997710 /* VLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VLCKit.framework; path = "../vlc-mac/VLCKit/build/Debug/VLCKit.framework"; sourceTree = "<group>"; };
+		7BC3BF251B8006B600997710 /* libvout_iosurface_plugin.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libvout_iosurface_plugin.dylib; path = "../vlc-mac/IOSurfaceModule/build/Debug/VLCKit.framework/Versions/A/plugins/libvout_iosurface_plugin.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BC3BF241B8005B500997710 /* VLCKit.framework in Frameworks */,
 				7B97B51B1B77E51C004BB472 /* ExtraAppKit.framework in Frameworks */,
 				7B97B51C1B77E51C004BB472 /* VideoClipAnnotationEditor.framework in Frameworks */,
 			);
@@ -76,6 +80,8 @@
 			children = (
 				7B97B5191B77E51C004BB472 /* ExtraAppKit.framework */,
 				7B97B51A1B77E51C004BB472 /* VideoClipAnnotationEditor.framework */,
+				7BC3BF231B8005B500997710 /* VLCKit.framework */,
+				7BC3BF251B8006B600997710 /* libvout_iosurface_plugin.dylib */,
 			);
 			name = Dependancies;
 			sourceTree = "<group>";

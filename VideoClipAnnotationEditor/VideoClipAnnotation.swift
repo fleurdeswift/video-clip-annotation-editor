@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ExtraDataStructures
 
 public protocol VideoClipAnnotation : class {
     var text:  String                   { get };

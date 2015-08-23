@@ -7,8 +7,13 @@
 
 import AppKit
 import ExtraAppKit
+import ExtraDataStructures
+
+public typealias VideoClipPreviewConfiguration = (size: NSSize, sampleRate: NSTimeInterval);
 
 public class VideoClipView : ScrollableView {
+    internal(set) public var cache = VideoClipPreviewCache(clips: [], sampleRate: 5);
+
     public class func numberOfImagesForClipDuration(duration: NSTimeInterval, sampleRate: NSTimeInterval = 5) -> Int {
         return max(1, Int(round(duration / sampleRate)));
     }
@@ -17,6 +22,7 @@ public class VideoClipView : ScrollableView {
     public var dataSource: VideoClipDataSource? {
         didSet {
             reloadData();
+            reloadCache();
         }
     }
 
@@ -95,7 +101,7 @@ public class VideoClipView : ScrollableView {
         }
     }
     
-    public var margin: Int = 12;
+    public var margin:           Int = 12;
     public var spaceBetweenClip: Int = 15;
     
     private func buildLines() -> [VideoClipLine] {
@@ -115,15 +121,17 @@ public class VideoClipView : ScrollableView {
                 var clipX          = 0;
                 let clipTotalWidth = imageCount * clip.previewWidth;
                 var clipWidth      = clipTotalWidth;
+                let previewConfig  = VideoClipPreviewConfiguration(size: NSSize(width: clip.previewWidth, height: dataSource.previewHeight), sampleRate: sampleRate);
                 
                 while clipWidth > 0 {
                     let use = min(spaceLeft, clipWidth);
                     
                     line.placeClip(clip,
-                        time:     TimeRange(
-                                      start: NSTimeInterval(clipX)       / NSTimeInterval(clipTotalWidth) * duration,
-                                      end:   NSTimeInterval(clipX + use) / NSTimeInterval(clipTotalWidth) * duration),
-                        position: NSRange(location: x, length: use));
+                        time:          TimeRange(
+                                           start: NSTimeInterval(clipX)       / NSTimeInterval(clipTotalWidth) * duration,
+                                           end:   NSTimeInterval(clipX + use) / NSTimeInterval(clipTotalWidth) * duration),
+                        position:      NSRange(location: x, length: use),
+                        previewConfig: previewConfig);
                     
                     clipX     += use;
                     clipWidth -= use;
@@ -314,14 +322,57 @@ public class VideoClipView : ScrollableView {
         _contentSize = CGSize(width: width, height: y + CGFloat(margin));
         invalidateContentSize();
     }
-    
+
+    public func reloadCache() {
+        cache.dispose();
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: nil, object: cache);
+
+        if let dataSource = dataSource {
+            cache = VideoClipPreviewCache(clips: dataSource.clips, sampleRate: dataSource.sampleRate);
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("previewCacheUpdated:"), name: VideoClipPreviewCacheUpdated, object: cache);
+        }
+        else {
+            cache = VideoClipPreviewCache(clips: [], sampleRate: 5);
+        }
+    }
+
+    public override func viewDidMoveToWindow() {
+        if self.window == nil {
+            cache.dispose();
+        }
+    }
+
+    @objc
+    private func previewCacheUpdated(notification: NSNotification) -> Void {
+        var time: NSTimeInterval = -1;
+
+        if let userInfo = notification.userInfo {
+            if let t = userInfo["Time"] as? NSTimeInterval {
+                time = t;
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+
+        for view in self.subviews {
+            if let clipView = view as? VideoClipLineEntryView {
+                clipView.previewCacheUpdated(time);
+            }
+        }
+    }
+
     @objc
     public override var flipped: Bool {
         get {
             return true;
         }
     }
-    
+
+
     // MARK: Hit Testing
     public override func frameDidChange() {
         reloadData();
@@ -329,7 +380,7 @@ public class VideoClipView : ScrollableView {
 
     public override func updateTrackingAreas() {
         let options = NSTrackingAreaOptions([
-                            NSTrackingAreaOptions.ActiveAlways,
+                            NSTrackingAreaOptions.ActiveInActiveApp,
                             NSTrackingAreaOptions.InVisibleRect,
                             NSTrackingAreaOptions.MouseEnteredAndExited,
                             NSTrackingAreaOptions.MouseMoved
@@ -438,17 +489,32 @@ public class VideoClipView : ScrollableView {
     
         return HitTest(area: .Background);
     }
-    
-    public override func mouseMoved(event: NSEvent) {
-        let h: HitTest = hitTest(self.convertPoint(event.locationInWindow, fromView: nil));
+
+    private var mouseMoveEvent: NSEvent?;
+    private var mouseMoveEventBlock: dispatch_block_t?;
+
+    public override func mouseMoved(ev: NSEvent) {
+        mouseMoveEvent = ev;
         
-        if let clip = h.clip, let time = h.time {
-            if h.area == .Clip {
-                self.currentTime = VideoClipPoint(clip: clip, time: time);
-            }
+        if mouseMoveEventBlock != nil {
+            return;
         }
+
+        mouseMoveEventBlock = {
+            let h: HitTest = self.hitTest(self.convertPoint(self.mouseMoveEvent!.locationInWindow, fromView: nil));
         
-        self.window?.title = h.description;
+            if let clip = h.clip, let time = h.time {
+                if h.area == .Clip {
+                    self.currentTime = VideoClipPoint(clip: clip, time: time);
+                }
+            }
+
+            self.window?.title = h.description;
+            self.mouseMoveEvent      = nil;
+            self.mouseMoveEventBlock = nil;
+        }
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(NSEC_PER_MSEC * 20)), dispatch_get_main_queue(), mouseMoveEventBlock!);
     }
 
     private var mouseDownHitTest: HitTest?;
@@ -680,5 +746,3 @@ public struct HashAnnotation : Hashable {
 public func == (p1: HashAnnotation, p2: HashAnnotation) -> Bool {
     return p1.ref === p2.ref;
 }
-
-

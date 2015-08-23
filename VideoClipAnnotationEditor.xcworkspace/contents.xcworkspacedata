@@ -10,4 +10,7 @@
    <FileRef
       location = "group:VideoClipAnnotationTest.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:../vlc-mac/VLCKit/VLCKit.xcodeproj">
+   </FileRef>
 </Workspace>

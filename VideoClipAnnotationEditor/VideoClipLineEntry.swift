@@ -7,6 +7,7 @@
 
 import Foundation
 import ExtraAppKit
+import ExtraDataStructures
 
 public func clamp<T : Comparable>(value: T, _ min: T, _ max: T) -> T {
     if value < min {
@@ -24,19 +25,32 @@ public func between<T : Comparable>(value: T, _ min: T, _ max: T) -> Bool {
 }
 
 internal class VideoClipLineEntry {
-    var clip:     VideoClip;
-    var time:     TimeRange;
-    var position: NSRange;
-    var edge:     EdgeType = .Complete;
-    
-    init(clip: VideoClip, time: TimeRange, position: NSRange, edge: EdgeType) {
+    let clip:          VideoClip;
+    let time:          TimeRange;
+    let position:      NSRange;
+    let edge:          EdgeType;
+    let previewWidth:  CGFloat;
+    var previews = [(x: CGFloat, time: NSTimeInterval, image: CGImageRef?)]();
+
+    init(clip: VideoClip, time: TimeRange, position: NSRange, edge: EdgeType, previewConfig: VideoClipPreviewConfiguration) {
         assert(time.length > 0);
-        self.clip     = clip;
-        self.time     = time;
-        self.position = position;
-        self.edge     = edge;
+        self.clip          = clip;
+        self.time          = time;
+        self.position      = position;
+        self.edge          = edge;
+        self.previewWidth  = previewConfig.size.width;
+
+        var previewTime = floor(time.start / previewConfig.sampleRate) * previewConfig.sampleRate;
+        var previewX    = positionInViewUnclampled(previewTime);
+
+        while previewTime < time.end {
+            previews.append((x: previewX, time: previewTime, image: nil));
+
+            previewX    += previewConfig.size.width;
+            previewTime += previewConfig.sampleRate;
+        }
     }
-    
+
     func position(t: NSTimeInterval) -> CGFloat {
         return CGFloat(position.location) + clamp(CGFloat(NSTimeInterval(position.length) / time.length * (t - time.start)), 0, CGFloat(position.length));
     }

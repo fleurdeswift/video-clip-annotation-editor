@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import ExtraDataStructures
 
 public enum EdgeType {
     case Complete, Partial, Start, End
