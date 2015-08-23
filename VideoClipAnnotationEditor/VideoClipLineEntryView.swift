@@ -208,4 +208,10 @@ public class VideoClipLineEntryView : NSView {
         
         return .None;
     }
+
+    public override var acceptsFirstResponder: Bool {
+        get {
+            return true;
+        }
+    }
 }

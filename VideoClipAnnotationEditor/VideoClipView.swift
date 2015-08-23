@@ -505,7 +505,7 @@ public class VideoClipView : ScrollableView {
         
             if let clip = h.clip, let time = h.time {
                 if h.area == .Clip {
-                    self.currentTime = VideoClipPoint(clip: clip, time: time);
+                    self.setCurrentTime(VideoClipPoint(clip: clip, time: time), event: ev);
                 }
             }
 
@@ -531,7 +531,11 @@ public class VideoClipView : ScrollableView {
                     h.time = sel.time.end;
                 }
             }
-        
+
+            if event.clickCount > 1 {
+                self.setCurrentTime(VideoClipPoint(clip: h.clip!, time: h.time!), event: event);
+            }
+
             mouseDownHitTest = h;
         }
         else {
@@ -551,7 +555,7 @@ public class VideoClipView : ScrollableView {
             
             if h.clip != nil && h.time != nil && h.area == .Clip && mouseDownHitTest.clip === h.clip {
                 self.selection = VideoClipRange(clip: mouseDownHitTest.clip!, time: TimeRange(t0: mouseDownHitTest.time!, t1: h.time!))
-                self.currentTime = VideoClipPoint(clip: mouseDownHitTest.clip!, time: h.time!);
+                self.setCurrentTime(VideoClipPoint(clip: mouseDownHitTest.clip!, time: h.time!), event: event);
             }
         }
     }
@@ -581,27 +585,30 @@ public class VideoClipView : ScrollableView {
         get {
             return _currentTime;
         }
+    }
+
+    private func setCurrentTime(newValue: VideoClipPoint?, event: NSEvent?) {
+        let oldValue = _currentTime;
+
+        if event?.clickCount > 1 {
+            // Force process.
+        }
+        else if let v = newValue, let ov = oldValue {
+            if abs(v.time - ov.time) < NSTimeThreshold {
+                return;
+            }
+        }
+        else if newValue == nil {
+            if _currentTime == nil {
+                return;
+            }
+        }
         
-        set {
-            let oldValue = _currentTime;
+        _currentTime = newValue;
+        updateCurrentTime(oldValue, new: newValue);
         
-            if let v = newValue, let ov = oldValue {
-                if abs(v.time - ov.time) < NSTimeThreshold {
-                    return;
-                }
-            }
-            else if newValue == nil {
-                if _currentTime == nil {
-                    return;
-                }
-            }
-            
-            _currentTime = newValue;
-            updateCurrentTime(oldValue, new: newValue);
-            
-            if let delegate = self.delegate {
-                delegate.currentTimeChanged(self, point: newValue);
-            }
+        if let delegate = self.delegate {
+            delegate.currentTimeChanged(self, point: newValue, event: event);
         }
     }
     
@@ -725,6 +732,12 @@ public class VideoClipView : ScrollableView {
                     annotationView.selected = false;
                 }
             }
+        }
+    }
+
+    public override var acceptsFirstResponder: Bool {
+        get {
+            return true;
         }
     }
 }

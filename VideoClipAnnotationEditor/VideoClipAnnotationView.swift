@@ -109,4 +109,10 @@ public class VideoClipAnnotationView : NSView {
             text.drawInRect(rect);
         }
     }
+
+    public override var acceptsFirstResponder: Bool {
+        get {
+            return true;
+        }
+    }
 }
