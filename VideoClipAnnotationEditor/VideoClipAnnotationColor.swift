@@ -75,4 +75,23 @@ public struct VideoClipAnnotationColor {
     public static func grayColor() -> VideoClipAnnotationColor {
         return sGrayColor;
     }
+
+    public static func colorByIndex(index: Int) -> VideoClipAnnotationColor {
+        switch (index % 7) {
+        case 0:
+            return sRedColor;
+        case 1:
+            return sOrangeColor;
+        case 2:
+            return sYellowColor;
+        case 3:
+            return sGreenColor;
+        case 4:
+            return sBlueColor;
+        case 5:
+            return sPurpleColor;
+        default:
+            return sGrayColor;
+        }
+    }
 }
